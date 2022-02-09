@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour{
     void Start(){
         bolhaSequencia = new List<Transform>();
 
-        LevelManager.instancia.GenerateLevel();
+        LevelManager.instancia.GerarNivel();
         
         atirandoRoteiro.canShoot = true;
         atirandoRoteiro.CreateNextBubble();
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour{
             DropDisconectedBubbles();
         }
 
-        LevelManager.instancia.UpdateListOfBubblesInScene();
+        LevelManager.instancia.ListarAtualizacaoBolhas();
 
         atirandoRoteiro.CreateNextBubble();
         atirandoRoteiro.canShoot = true;
@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour{
 
     #region Drop Disconected Bubbles
     private void SetAllBubblesConnectionToFalse(){
-        foreach (Transform bolha in LevelManager.instancia.bubblesArea){
+        foreach (Transform bolha in LevelManager.instancia.aresBolhas){
             bolha.GetComponent<Bubble>().Conectado = false;
         }
     }
@@ -113,7 +113,7 @@ public class GameManager : MonoBehaviour{
     }
 
     private void SetGravityToDisconectedBubbles(){
-        foreach (Transform bolha in LevelManager.instancia.bubblesArea){
+        foreach (Transform bolha in LevelManager.instancia.aresBolhas){
             if (!bolha.GetComponent<Bubble>().Conectado){
                 bolha.gameObject.GetComponent<CircleCollider2D>().enabled = false;
                 if(!bolha.GetComponent<Rigidbody2D>()){

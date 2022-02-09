@@ -16,17 +16,14 @@ public class Shooter : MonoBehaviour
     public bool isSwaping = false;
     public float time = 0.02f;
 
-    public void Update()
-    {
+    public void Update(){
         lookDirection = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
         lookAngle = Mathf.Atan2(lookDirection.y, lookDirection.x) * Mathf.Rad2Deg;
         gunSprite.rotation = Quaternion.Euler(0f, 0f, lookAngle - 90f);
 
-        if(isSwaping)
-        {
+        if(isSwaping){
             if(Vector2.Distance(currentBubble.transform.position, nextBubblePosition.position) <= 0.2f
-                && Vector2.Distance(nextBubble.transform.position, transform.position) <= 0.2f)
-            {
+                && Vector2.Distance(nextBubble.transform.position, transform.position) <= 0.2f){
                 nextBubble.transform.position = transform.position;
                 currentBubble.transform.position = nextBubblePosition.position;
 
@@ -45,8 +42,7 @@ public class Shooter : MonoBehaviour
         }
     }
 
-    public void Shoot()
-    {
+    public void Shoot(){
         transform.rotation = Quaternion.Euler(0f, 0f, lookAngle - 90f);
         currentBubble.transform.rotation = transform.rotation;
         currentBubble.GetComponent<Rigidbody2D>().AddForce(currentBubble.transform.up * speed, ForceMode2D.Impulse);
@@ -54,43 +50,36 @@ public class Shooter : MonoBehaviour
     }
 
     [ContextMenu("SwapBubbles")]
-    public void SwapBubbles()
-    {
+    public void SwapBubbles(){
         currentBubble.GetComponent<Collider2D>().enabled = false;
         nextBubble.GetComponent<Collider2D>().enabled = false;
         isSwaping = true;
     }
 
     [ContextMenu("CreateNextBubble")]
-    public void CreateNextBubble()
-    {
-        List<GameObject> bubblesInScene = LevelManager.instancia.bubblesInScene;
-        List<string> colors = LevelManager.instancia.colorsInScene;
+    public void CreateNextBubble(){
+        List<GameObject> bolhasCena = LevelManager.instancia.bolhasCena;
+        List<string> colors = LevelManager.instancia.coresCena;
 
-        if (nextBubble == null)
-        {
-            nextBubble = InstantiateNewBubble(bubblesInScene);
+        if (nextBubble == null){
+            nextBubble = InstantiateNewBubble(bolhasCena);
         }
-        else
-        {
-            if(!colors.Contains(nextBubble.GetComponent<Bubble>().bubbleColor.ToString()))
-            {
+        else{
+            if(!colors.Contains(nextBubble.GetComponent<Bubble>().bubbleColor.ToString())){
                 Destroy(nextBubble);
-                nextBubble = InstantiateNewBubble(bubblesInScene);
+                nextBubble = InstantiateNewBubble(bolhasCena);
             }
         }
 
-        if(currentBubble == null)
-        {
+        if(currentBubble == null){
             currentBubble = nextBubble;
             currentBubble.transform.position = new Vector2(transform.position.x, transform.position.y);
-            nextBubble = InstantiateNewBubble(bubblesInScene);
+            nextBubble = InstantiateNewBubble(bolhasCena);
         }
     }
 
-    private GameObject InstantiateNewBubble(List<GameObject> bubblesInScene)
-    {
-        GameObject newBubble = Instantiate(bubblesInScene[(int)(Random.Range(0, bubblesInScene.Count * 1000000f) / 1000000f)]);
+    private GameObject InstantiateNewBubble(List<GameObject> bolhasCena){
+        GameObject newBubble = Instantiate(bolhasCena[(int)(Random.Range(0, bolhasCena.Count * 1000000f) / 1000000f)]);
         newBubble.transform.position = new Vector2(nextBubblePosition.position.x, nextBubblePosition.position.y);
         newBubble.GetComponent<Bubble>().Fixo = false;
         Rigidbody2D rb2d = newBubble.AddComponent(typeof(Rigidbody2D)) as Rigidbody2D;

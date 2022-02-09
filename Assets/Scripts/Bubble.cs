@@ -29,7 +29,7 @@ public class Bubble : MonoBehaviour{ //nao pode em verde
         var rb = GetComponent<Rigidbody2D>();
         Destroy(rb);
         Fixo = true;
-        LevelManager.instancia.SetAsBubbleAreaChild(transform);
+        LevelManager.instancia.DefinirBolha(transform);
         GameManager.instancia.ProcessTurn(transform);
     }
 
