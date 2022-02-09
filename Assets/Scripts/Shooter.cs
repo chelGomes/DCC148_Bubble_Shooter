@@ -64,8 +64,8 @@ public class Shooter : MonoBehaviour
     [ContextMenu("CreateNextBubble")]
     public void CreateNextBubble()
     {
-        List<GameObject> bubblesInScene = LevelManager.instance.bubblesInScene;
-        List<string> colors = LevelManager.instance.colorsInScene;
+        List<GameObject> bubblesInScene = LevelManager.instancia.bubblesInScene;
+        List<string> colors = LevelManager.instancia.colorsInScene;
 
         if (nextBubble == null)
         {

@@ -5,13 +5,13 @@ public class LevelManager : MonoBehaviour
 {
 
     #region Singleton
-    public static LevelManager instance;
+    public static LevelManager instancia;
 
     private void Awake()
     {
-        if (instance == null)
+        if (instancia == null)
         {
-            instance = this;
+            instancia = this;
         }
     }
     #endregion
@@ -86,8 +86,8 @@ public class LevelManager : MonoBehaviour
     {
         foreach (Transform t in go.transform)
         {
-            var bubble = Instantiate(bubbles[(int)(Random.Range(0, bubbles.Count * 1000000f) / 1000000f)], bubblesArea);
-            bubble.transform.position = t.position;
+            var bolha = Instantiate(bubbles[(int)(Random.Range(0, bubbles.Count * 1000000f) / 1000000f)], bubblesArea);
+            bolha.transform.position = t.position;
         }
 
         Destroy(go);
@@ -100,10 +100,10 @@ public class LevelManager : MonoBehaviour
 
         foreach (Transform t in bubblesArea)
         {
-            Bubble bubbleScript = t.GetComponent<Bubble>();
-            if (colors.Count < bubblesPrefabs.Count && !colors.Contains(bubbleScript.bubbleColor.ToString()))
+            Bubble roteiroBolha = t.GetComponent<Bubble>();
+            if (colors.Count < bubblesPrefabs.Count && !colors.Contains(roteiroBolha.bubbleColor.ToString()))
             {
-                string color = bubbleScript.bubbleColor.ToString();
+                string color = roteiroBolha.bubbleColor.ToString();
                 colors.Add(color);
 
                 foreach (GameObject prefab in bubblesPrefabs)
@@ -120,9 +120,9 @@ public class LevelManager : MonoBehaviour
         bubblesInScene = newListOfBubbles;
     }
 
-    public void SetAsBubbleAreaChild(Transform bubble)
+    public void SetAsBubbleAreaChild(Transform bolha)
     {
-        SnapToNearestGripPosition(bubble);
-        bubble.SetParent(bubblesArea);
+        SnapToNearestGripPosition(bolha);
+        bolha.SetParent(bubblesArea);
     }
 }

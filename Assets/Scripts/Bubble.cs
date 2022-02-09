@@ -29,13 +29,13 @@ public class Bubble : MonoBehaviour{ //nao pode em verde
         var rb = GetComponent<Rigidbody2D>();
         Destroy(rb);
         Fixo = true;
-        LevelManager.instance.SetAsBubbleAreaChild(transform);
-        GameManager.instance.ProcessTurn(transform);
+        LevelManager.instancia.SetAsBubbleAreaChild(transform);
+        GameManager.instancia.ProcessTurn(transform);
     }
 
     public List<Transform> GetNeighbors(){
         List<RaycastHit2D> bater = new List<RaycastHit2D>();
-        List<Transform> neighbors = new List<Transform>();
+        List<Transform> vizinhanca = new List<Transform>();
 
         bater.Add(Physics2D.Raycast(new Vector2(transform.position.x - raycastOffset, transform.position.y), Vector3.left, raycastRange));
         bater.Add(Physics2D.Raycast(new Vector2(transform.position.x + raycastOffset, transform.position.y), Vector3.right, raycastRange));
@@ -46,11 +46,11 @@ public class Bubble : MonoBehaviour{ //nao pode em verde
 
         foreach(RaycastHit2D hit in bater) {
             if(hit.collider != null && hit.transform.tag.Equals("Bubble")){
-                neighbors.Add(hit.transform);
+                vizinhanca.Add(hit.transform);
             }
         }
 
-        return neighbors;
+        return vizinhanca;
     }
 
     void OnBecameInvisible(){

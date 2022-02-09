@@ -1,149 +1,123 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
-{
+public class GameManager : MonoBehaviour{
     #region Singleton
-    public static GameManager instance;
+    public static GameManager instancia;
 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
+    private void Despertar(){
+        if (instancia == null) {
+            instancia = this;
         }
     }
     #endregion
 
-    public Shooter shootScript;
-    public Transform pointerToLastLine;
+    public Shooter atirandoRoteiro;
+    public Transform ponteiroUltimaLinha;
 
-    private int sequenceSize = 3;
+    private int tamanho = 3;
     [SerializeField]
-    private List<Transform> bubbleSequence;
+    private List<Transform> bolhaSequencia;
 
-    void Start()
-    {
-        bubbleSequence = new List<Transform>();
+    void Start(){
+        bolhaSequencia = new List<Transform>();
 
-        LevelManager.instance.GenerateLevel();
+        LevelManager.instancia.GenerateLevel();
         
-        shootScript.canShoot = true;
-        shootScript.CreateNextBubble();
+        atirandoRoteiro.canShoot = true;
+        atirandoRoteiro.CreateNextBubble();
     }
 
-    void Update()
-    {
-        if (shootScript.canShoot
+    void Update() {
+        if (atirandoRoteiro.canShoot
             && Input.GetMouseButtonUp(0)
-            && (Camera.main.ScreenToWorldPoint(Input.mousePosition).y > shootScript.transform.position.y))
-        {
-            shootScript.canShoot = false;
-            shootScript.Shoot();
+            && (Camera.main.ScreenToWorldPoint(Input.mousePosition).y > atirandoRoteiro.transform.position.y)){
+            atirandoRoteiro.canShoot = false;
+            atirandoRoteiro.Shoot();
         }
     }
 
-    public void ProcessTurn(Transform currentBubble)
-    {
-        bubbleSequence.Clear();
+    public void ProcessTurn(Transform currentBubble){
+        bolhaSequencia.Clear();
         CheckBubbleSequence(currentBubble);
 
-        if(bubbleSequence.Count >= sequenceSize)
-        {
+        if(bolhaSequencia.Count >= tamanho){
             DestroyBubblesInSequence();
             DropDisconectedBubbles();
         }
 
-        LevelManager.instance.UpdateListOfBubblesInScene();
+        LevelManager.instancia.UpdateListOfBubblesInScene();
 
-        shootScript.CreateNextBubble();
-        shootScript.canShoot = true;
+        atirandoRoteiro.CreateNextBubble();
+        atirandoRoteiro.canShoot = true;
     }
 
-    private void CheckBubbleSequence(Transform currentBubble)
-    {
-        bubbleSequence.Add(currentBubble);
+    private void CheckBubbleSequence(Transform currentBubble){
+        bolhaSequencia.Add(currentBubble);
 
-        Bubble bubbleScript = currentBubble.GetComponent<Bubble>();
-        List<Transform> neighbors = bubbleScript.GetNeighbors();
+        Bubble roteiroBolha = currentBubble.GetComponent<Bubble>();
+        List<Transform> vizinhanca = roteiroBolha.GetNeighbors();
 
-        foreach(Transform t in neighbors)
-        {
-            if (!bubbleSequence.Contains(t))
-            {
+        foreach(Transform t in vizinhanca) {
+            if (!bolhaSequencia.Contains(t)){
 
                 Bubble bScript = t.GetComponent<Bubble>();
 
-                if (bScript.bubbleColor == bubbleScript.bubbleColor)
-                {
+                if (bScript.bubbleColor == roteiroBolha.bubbleColor){
                     CheckBubbleSequence(t);
                 }
             }
         }
     }
 
-    private void DestroyBubblesInSequence()
-    {
-        foreach(Transform t in bubbleSequence)
-        {
+    private void DestroyBubblesInSequence(){
+        foreach(Transform t in bolhaSequencia){
             Destroy(t.gameObject);
         }
     }
 
-    private void DropDisconectedBubbles()
-    {
+    private void DropDisconectedBubbles(){
         SetAllBubblesConnectionToFalse();
         SetConnectedBubblesToTrue();
         SetGravityToDisconectedBubbles();
     }
 
     #region Drop Disconected Bubbles
-    private void SetAllBubblesConnectionToFalse()
-    {
-        foreach (Transform bubble in LevelManager.instance.bubblesArea)
-        {
-            bubble.GetComponent<Bubble>().Conectado = false;
+    private void SetAllBubblesConnectionToFalse(){
+        foreach (Transform bolha in LevelManager.instancia.bubblesArea){
+            bolha.GetComponent<Bubble>().Conectado = false;
         }
     }
 
-    private void SetConnectedBubblesToTrue()
-    {
-        bubbleSequence.Clear();
+    private void SetConnectedBubblesToTrue(){
+        bolhaSequencia.Clear();
 
-        RaycastHit2D[] batendo = Physics2D.RaycastAll(pointerToLastLine.position, pointerToLastLine.right, 15f);
+        RaycastHit2D[] batendo = Physics2D.RaycastAll(ponteiroUltimaLinha.position, ponteiroUltimaLinha.right, 15f);
 
-        for (int i = 0; i < batendo.Length; i++)
-        {
+        for (int i = 0; i < batendo.Length; i++){
             if (batendo[i].transform.gameObject.tag.Equals("Bubble"))
                 SetNeighboursConnectionToTrue(batendo[i].transform);
         }
     }
 
-    private void SetNeighboursConnectionToTrue(Transform bubble)
-    {
-        Bubble bubbleScript = bubble.GetComponent<Bubble>();
-        bubbleScript.Conectado = true;
-        bubbleSequence.Add(bubble);
+    private void SetNeighboursConnectionToTrue(Transform bolha){
+        Bubble roteiroBolha = bolha.GetComponent<Bubble>();
+        roteiroBolha.Conectado = true;
+        bolhaSequencia.Add(bolha);
 
-        foreach(Transform t in bubbleScript.GetNeighbors())
-        {
-            if(!bubbleSequence.Contains(t))
-            {
+        foreach(Transform t in roteiroBolha.GetNeighbors()){
+            if(!bolhaSequencia.Contains(t)){
                 SetNeighboursConnectionToTrue(t);
             }
         }
     }
 
-    private void SetGravityToDisconectedBubbles()
-    {
-        foreach (Transform bubble in LevelManager.instance.bubblesArea)
-        {
-            if (!bubble.GetComponent<Bubble>().Conectado)
-            {
-                bubble.gameObject.GetComponent<CircleCollider2D>().enabled = false;
-                if(!bubble.GetComponent<Rigidbody2D>())
-                {
-                    Rigidbody2D rb2d = bubble.gameObject.AddComponent(typeof(Rigidbody2D)) as Rigidbody2D;
+    private void SetGravityToDisconectedBubbles(){
+        foreach (Transform bolha in LevelManager.instancia.bubblesArea){
+            if (!bolha.GetComponent<Bubble>().Conectado){
+                bolha.gameObject.GetComponent<CircleCollider2D>().enabled = false;
+                if(!bolha.GetComponent<Rigidbody2D>()){
+                    Rigidbody2D rb2d = bolha.gameObject.AddComponent(typeof(Rigidbody2D)) as Rigidbody2D;
                 }       
             }
         }
