@@ -39,11 +39,11 @@ public class GameManager : MonoBehaviour{
 
     public void ProcessTurn(Transform bolhaAtual){
         bolhaSequencia.Clear();
-        CheckBubbleSequence(bolhaAtual);
+        BolhaVerificacao(bolhaAtual);
 
         if(bolhaSequencia.Count >= tamanho){
-            DestroyBubblesInSequence();
-            DropDisconectedBubbles();
+            DestruirBolha();
+            DerrubarBolhas();
         }
 
         LevelManager.instancia.ListarAtualizacaoBolhas();
@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour{
         atirandoRoteiro.podeAtirar = true;
     }
 
-    private void CheckBubbleSequence(Transform bolhaAtual){
+    private void BolhaVerificacao(Transform bolhaAtual){
         bolhaSequencia.Add(bolhaAtual);
 
         Bubble roteiroBolha = bolhaAtual.GetComponent<Bubble>();
@@ -64,55 +64,55 @@ public class GameManager : MonoBehaviour{
                 Bubble bScript = t.GetComponent<Bubble>();
 
                 if (bScript.bubbleColor == roteiroBolha.bubbleColor){
-                    CheckBubbleSequence(t);
+                    BolhaVerificacao(t);
                 }
             }
         }
     }
 
-    private void DestroyBubblesInSequence(){
+    private void DestruirBolha(){
         foreach(Transform t in bolhaSequencia){
             Destroy(t.gameObject);
         }
     }
 
-    private void DropDisconectedBubbles(){
-        SetAllBubblesConnectionToFalse();
-        SetConnectedBubblesToTrue();
-        SetGravityToDisconectedBubbles();
+    private void DerrubarBolhas(){
+        ConexaoBolhaFalsa();
+        ConectadaBolhaVerdadeira();
+        GravidadeBolhasDesconectadas();
     }
 
     #region Drop Disconected Bubbles
-    private void SetAllBubblesConnectionToFalse(){
+    private void ConexaoBolhaFalsa(){
         foreach (Transform bolha in LevelManager.instancia.aresBolhas){
             bolha.GetComponent<Bubble>().Conectado = false;
         }
     }
 
-    private void SetConnectedBubblesToTrue(){
+    private void ConectadaBolhaVerdadeira(){
         bolhaSequencia.Clear();
 
         RaycastHit2D[] batendo = Physics2D.RaycastAll(ponteiroUltimaLinha.position, ponteiroUltimaLinha.right, 15f);
 
         for (int i = 0; i < batendo.Length; i++){
             if (batendo[i].transform.gameObject.tag.Equals("Bubble"))
-                SetNeighboursConnectionToTrue(batendo[i].transform);
+                DefinirVizinhosConectados(batendo[i].transform);
         }
     }
 
-    private void SetNeighboursConnectionToTrue(Transform bolha){
+    private void DefinirVizinhosConectados(Transform bolha){
         Bubble roteiroBolha = bolha.GetComponent<Bubble>();
         roteiroBolha.Conectado = true;
         bolhaSequencia.Add(bolha);
 
         foreach(Transform t in roteiroBolha.GetNeighbors()){
             if(!bolhaSequencia.Contains(t)){
-                SetNeighboursConnectionToTrue(t);
+                DefinirVizinhosConectados(t);
             }
         }
     }
 
-    private void SetGravityToDisconectedBubbles(){
+    private void GravidadeBolhasDesconectadas(){
         foreach (Transform bolha in LevelManager.instancia.aresBolhas){
             if (!bolha.GetComponent<Bubble>().Conectado){
                 bolha.gameObject.GetComponent<CircleCollider2D>().enabled = false;
