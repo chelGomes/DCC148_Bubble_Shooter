@@ -80,14 +80,14 @@ public class LevelManager : MonoBehaviour{
     }
 
     public void ListarAtualizacaoBolhas(){
-        List<string> colors = new List<string>();
+        List<string> cores = new List<string>();
         List<GameObject> newListOfBubbles = new List<GameObject>();
 
         foreach (Transform t in aresBolhas){
             Bubble roteiroBolha = t.GetComponent<Bubble>();
-            if (colors.Count < bolhasFabricadas.Count && !colors.Contains(roteiroBolha.bubbleColor.ToString())){
+            if (cores.Count < bolhasFabricadas.Count && !cores.Contains(roteiroBolha.bubbleColor.ToString())){
                 string color = roteiroBolha.bubbleColor.ToString();
-                colors.Add(color);
+                cores.Add(color);
 
                 foreach (GameObject prefab in bolhasFabricadas){
                     if (color.Equals(prefab.GetComponent<Bubble>().bubbleColor.ToString())){
@@ -97,7 +97,7 @@ public class LevelManager : MonoBehaviour{
             }
         }
 
-        coresCena = colors;
+        coresCena = cores;
         bolhasCena = newListOfBubbles;
     }
 

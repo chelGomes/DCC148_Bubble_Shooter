@@ -24,22 +24,22 @@ public class GameManager : MonoBehaviour{
 
         LevelManager.instancia.GerarNivel();
         
-        atirandoRoteiro.canShoot = true;
-        atirandoRoteiro.CreateNextBubble();
+        atirandoRoteiro.podeAtirar = true;
+        atirandoRoteiro.CriarProximasBolhas();
     }
 
     void Update() {
-        if (atirandoRoteiro.canShoot
+        if (atirandoRoteiro.podeAtirar
             && Input.GetMouseButtonUp(0)
             && (Camera.main.ScreenToWorldPoint(Input.mousePosition).y > atirandoRoteiro.transform.position.y)){
-            atirandoRoteiro.canShoot = false;
-            atirandoRoteiro.Shoot();
+            atirandoRoteiro.podeAtirar = false;
+            atirandoRoteiro.Atirar();
         }
     }
 
-    public void ProcessTurn(Transform currentBubble){
+    public void ProcessTurn(Transform bolhaAtual){
         bolhaSequencia.Clear();
-        CheckBubbleSequence(currentBubble);
+        CheckBubbleSequence(bolhaAtual);
 
         if(bolhaSequencia.Count >= tamanho){
             DestroyBubblesInSequence();
@@ -48,14 +48,14 @@ public class GameManager : MonoBehaviour{
 
         LevelManager.instancia.ListarAtualizacaoBolhas();
 
-        atirandoRoteiro.CreateNextBubble();
-        atirandoRoteiro.canShoot = true;
+        atirandoRoteiro.CriarProximasBolhas();
+        atirandoRoteiro.podeAtirar = true;
     }
 
-    private void CheckBubbleSequence(Transform currentBubble){
-        bolhaSequencia.Add(currentBubble);
+    private void CheckBubbleSequence(Transform bolhaAtual){
+        bolhaSequencia.Add(bolhaAtual);
 
-        Bubble roteiroBolha = currentBubble.GetComponent<Bubble>();
+        Bubble roteiroBolha = bolhaAtual.GetComponent<Bubble>();
         List<Transform> vizinhanca = roteiroBolha.GetNeighbors();
 
         foreach(Transform t in vizinhanca) {
